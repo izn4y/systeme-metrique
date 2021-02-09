@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+        integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+    <title>Système métrique</title>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card mt-5">
+                    <h5 class="card-header text-center">General info</h5>
+                    <div class="card-body">
+                        <p class="card-text">Os :</p>
+                        <p class="card-text">Uptime: </p>
+                        <p class="card-text">Hostname :</p>
+                        <p class="card-text">Kernel :</p>
+                        <p class="card-text">CPU(s) :</p>
+                        
+                   
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card card mt-5">
+                    <h5 class="card-header text-center">CUP Usage</h5>
+                    <div class="card-body">
+                        <div id="donut_single" style="height: 200px; width:200px ;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card card mt-5">
+                    <h5 class="card-header">Memory Usage</h5>
+                    <div class="card-body">
+                        <div id="chart_div" style="width: 100%; height: 500px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+
+            var data = google.visualization.arrayToDataTable([
+                ['Effort', 'Amount given'],
+                ['My all', 100],
+            ]);
+
+            var options = {
+                pieHole: 0.5,
+                pieSliceTextStyle: {
+                    color: 'black',
+                },
+                legend: 'none'
+            };
+
+            var chart = new google.visualization.PieChart(document.getElementById('donut_single'));
+            chart.draw(data, options);
+        }
+    </script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = google.visualization.arrayToDataTable([
+                ['Year', 'Sales', 'Expenses'],
+                ['2013', 1000, 400],
+                ['2014', 1170, 460],
+                ['2015', 660, 1120],
+                ['2016', 1030, 540]
+            ]);
+              var options= {
+                isStacked: 'relative',
+                height: 300,
+                legend: { position: 'top', maxLines: 3 },
+                vAxis: {
+                    minValue: 0,
+                    ticks: [0, .3, .6, .9, 1]
+                }
+            };
+            
+
+            var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+</body>
+
+</html>
