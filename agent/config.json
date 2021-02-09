@@ -1,0 +1,6 @@
+{
+  "ssh" : "ssh",
+  "apache": "apache",
+  "mysql": "mysql",
+  "nginx": "nginx"
+}
