@@ -11,18 +11,10 @@ import re
 import json
 import distro
 
-# Architecture
-print("Architecture: " + platform.architecture()[0])
+from flask import Flask, jsonify, request
+from flask_cors import CORS, cross_origin
 
-# machine
-print("Machine: " + platform.machine())
-
-# node (hostname)
-#print("Node: " + platform.node())
-print("Hostname: " + platform.uname()[1])
-
-# system
-print("System: " + platform.system())
+data = {}
 
 # Uptime
 # ----------------------------------------
@@ -64,18 +56,37 @@ def uptime():
     return string
 
 
+# Architecture
+print("Architecture: " + platform.architecture()[0])
+data["archicteture"] = platform.architecture()[0]
+# machine
+print("Machine: " + platform.machine())
+data["machine"] = platform.machine()
+
+# node (hostname)
+print("Hostname: " + platform.uname()[1])
+data["hostname"] = platform.uname()[1]
+
+# system
+print("System: " + platform.system())
+data["system"] = platform.system()
+
+# Uptime
 print("Uptime:", uptime())
+data["uptime"] = uptime()
 
 # distribution (OS)
 dist = distro.linux_distribution(full_distribution_name=False)
-print("OS: " + dist)
+distInfo = dist[0] + " " + dist[1] + " " + dist[2]
+print(distInfo)
+data["distro"] = distInfo
 
 # Kernel
 print("Kernel: " + platform.release())
+data["kernel"] = platform.release()
+
 
 # CPU(s)
-
-
 def get_processor_name():
     if platform.system() == "Windows":
         return platform.processor()
@@ -93,25 +104,48 @@ def get_processor_name():
 
 
 print("CPU(s):" + get_processor_name())
-
-# Is service active ?
-
-# service = "nginx"
-# proc = subprocess.Popen(
-#     ["systemctl", "is-active",  service], stdout=subprocess.PIPE)
-# (output, err) = proc.communicate()
-# output = output.decode('utf-8')
-
-# print(service + ": " + output)
+data["processor"] = get_processor_name()
 
 
 def isServiceActive(service):
     stat = subprocess.call(["systemctl", "is-active", "--quiet", "ssh"])
     if (stat == 0):  # if 0 (active), print "Active"
         print(service + ": " + "active")
+        data["ActiveServices"].append(service)
 
 
-with open('config/config.json') as config_file:
-    data = json.load(config_file)
-    for service in data:
+with open('config.json') as config_file:
+    conf = json.load(config_file)
+    data["ActiveServices"] = []
+    for service in conf:
         isServiceActive(service)
+
+with open("data_file.json", "w") as write_file:
+    json.dump(data, write_file)
+
+app = Flask(__name__)
+cors = CORS(app)
+app.config['CORS_HEADERS'] = 'Content-Type'
+
+
+@cross_origin()
+@app.route('/api/push_host_infos/', methods=['GET', 'POST'])
+def push_host_infos():
+    try:
+        data = request.data
+        print(data)
+        result = 'OK'
+    except Exception:
+        return jsonify('Error\n%s' % traceback.format_exc())
+    return jsonify(result)
+
+
+@app.route('/api/get-json')
+def system_info():
+
+    return jsonify(data)
+
+
+if __name__ == '__main__':
+    print("Application en écoute sur port 8517")
+    app.run(host="0.0.0.0", port=int("8517"))
